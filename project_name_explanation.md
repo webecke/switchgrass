@@ -1,12 +1,14 @@
-# SwitchGrass Name Explanation 🌾
+# Switchgrass Name Explanation 🌾
 
 I was discussing this project with Claude (the AI from Anthropic) and here is the discussion that led to choosing this name. 
 
-Long story short, when I first was brainstorming this project, it was more of a tree structure, so it was going to be called `Redwood` or `Sycamore` or some other cool tree. But then after more design work, I realized a more free-form graph structure would make sense. I chose `SwitchGrass` because:
+Long story short, when I first was brainstorming this project, it was more of a tree structure, so it was going to be called `Redwood` or `Sycamore` or some other cool tree. But then after more design work, I realized a more free-form graph structure would make sense. I chose `Switchgrass` because:
 1. it sounds cool
 2. shortens to alias `sg` for python imports _(looks nice imho)_
 3. Switchgrass in nature is a foundational species for ecosystems, but isn't very flashy
 4. Switchgrass in nature is adaptable
+
+And just for clarification, when used as a proper noun, it is `Switchgrass` with a capital "S", NOT `SwitchGrass` with a capital "S" and "G". Obviously in code it would be `switchgrass` to match python convention.
 
 ## Conversation with Claude (AI)
 

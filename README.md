@@ -1,4 +1,4 @@
-# SwitchGrass 🌾
+# Switchgrass 🌾
 A homegrown python framework for building CLI applications
 
 ### What?
