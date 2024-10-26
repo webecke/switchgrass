@@ -17,8 +17,12 @@ def main_menu(cli: CLI):
 
 
 def add_menu(cli: CLI):
-    num1 = float(input("number 1: "))
-    num2 = float(input("number 2: "))
+    num1 = cli.get_input_int("Number 1")
+    num2 = cli.get_input_int("Number 2")
+    ready = cli.get_input_bool("Are you ready?")
+    if not ready:
+        print("oh, ok")
+        return
     sum = num1 + num2
     print(f"{num1} + {num2} = {sum}")
     return sum
