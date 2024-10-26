@@ -10,3 +10,8 @@ Wish me luck!
 
 ### Help
 If you've come across this repo somehow and this project seems interesting, feel free to join and help out!
+
+
+### Show your support
+Obviously no one is using this, but I learned you can custom-make badges! Like this:
+[![Grown with Switchgrass](https://img.shields.io/badge/grown%20with-switchgrass%20🌾-2e7d32)](https://github.com/webecke/switchgrass)

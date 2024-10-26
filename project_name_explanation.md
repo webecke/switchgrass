@@ -121,8 +121,7 @@ Switchgrass (Panicum virgatum) is a fascinating prairie grass native to North Am
 1. It's a foundational species that:
 - Helps prevent soil erosion
 - Provides structure for other plants to grow
-- Creates stable environments for ecosystems
-- (Like how your framework provides foundation for other CLI apps)
+- Creates stable environments for ecosystems _(Like how your framework provides foundation for other CLI apps)_
 
 2. It's incredibly adaptable:
 - Can grow in many different soils and climates
