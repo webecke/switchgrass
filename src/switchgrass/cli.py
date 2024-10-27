@@ -6,6 +6,7 @@ def default_quit_handler(cli: "CLI"):
     try:
         confirm = cli.get_input_bool("Are you sure you want to quit?")
         if confirm:
+            print("Ok, goodbye")
             sys.exit(0)
         else:
             print("Canceling quit")
@@ -19,12 +20,26 @@ class CLI:
     def __init__(self,
                  program_name: str = "program",
                  input_indicator: str = "> ",
-                 cancel_message: str = "Input canceled"):
+                 cancel_message: str = "Input canceled",
+                 input_true_options: set[str] = None,
+                 input_false_options: set[str] = None,
+                 input_bool_error_message: set[str] = "Please enter 'yes' or 'no' (or 'y'/'n')",
+                 cancel_commands: set[str] = None,
+                 quit_commands: set[str] = None):
         self.name: str = program_name
         self._steps: Dict[str, Step] = {}
+
+        # input management strings
         self._input_indicator = input_indicator
+        self._input_true_options = {option.lower() for option in (input_true_options or {"yes", "y"})}
+        self._input_false_options = {option.lower() for option in (input_false_options or {"no", "n"})}
+        self._input_bool_error_message = input_bool_error_message
+
+        # control-flow options
         self._cancel_message = cancel_message
         self._quit_handler = default_quit_handler
+        self._cancel_commands = {cmd.lower() for cmd in (cancel_commands or {"cancel"})}
+        self._quit_commands = {cmd.lower() for cmd in (quit_commands or {"quit", "exit"})}
 
     """============
     Step Management
@@ -42,7 +57,7 @@ class CLI:
         self.goto(starting_step)
 
     def goto_quit(self):
-        self._quit_handler(self)
+        return self._quit_handler(self)
 
     """=======
     User Input
@@ -53,24 +68,33 @@ class CLI:
             print(prompt)
 
         try:
-            return input(self._input_indicator).strip()
+            response = input(self._input_indicator).strip()
+
+            if response.lower() in self._quit_commands:
+                raise EOFError
+            elif response.lower() in self._cancel_commands:
+                raise KeyboardInterrupt
+
+            return response
+
         except KeyboardInterrupt:
             print(f"\n{self._cancel_message}")
             raise UserCancel
         except EOFError:
             print()  # ensures there's a blank line for the quit handler to start on
             self.goto_quit()
+            return self.get_input(prompt)  # if the quit handler decides not to quit, reprompt for input right where you left off
 
     def get_input_bool(self, prompt: str = None) -> bool:
         while True:
             response = self.get_input(prompt).lower()
-            match response:
-                case "yes" | "y":
+            match response.lower():
+                case option if option in self._input_true_options:
                     return True
-                case "no" | "n":
+                case option if option in self._input_false_options:
                     return False
                 case _:
-                    print("Please enter 'yes' or 'no' (or 'y'/'n')")
+                    print(self._input_bool_error_message)
 
     def get_input_int(self, prompt: str = None, type_name: str = "integer") -> int:
         while True:
