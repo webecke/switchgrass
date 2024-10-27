@@ -4,10 +4,12 @@ from typing import Dict, Callable
 class CLI:
     def __init__(self,
                  program_name: str = "program",
-                 input_indicator: str = "> "):
+                 input_indicator: str = "> ",
+                 cancel_message: str = "Input canceled"):
         self.name: str = program_name
         self._steps: Dict[str, Step] = {}
         self._input_indicator = input_indicator
+        self._cancel_message = cancel_message
 
     """============
     Step Management
@@ -16,22 +18,29 @@ class CLI:
     def add(self, step_name: str, handler: Callable[["CLI"], any]):
         self._steps[step_name] = Step(step_name, handler)
 
-    def go_to(self, step_name):
+    def goto(self, step_name):
+        if step_name not in self._steps.keys():
+            raise InvalidStepError(f"Step '{step_name}' does not exist")
         return self._steps[step_name].handler(self)
 
     def run(self, starting_step: str):
-        print("Starting...")
-        self._steps[starting_step].handler(self)
+        self.goto(starting_step)
 
     """=======
     User Input
     ======="""
 
-    def get_input(self, prompt: str) -> str:
-        print(prompt)
-        return input(self._input_indicator).strip()
+    def get_input(self, prompt: str = None) -> str:
+        if prompt is not None:
+            print(prompt)
 
-    def get_input_bool(self, prompt: str) -> bool:
+        try:
+            return input(self._input_indicator).strip()
+        except KeyboardInterrupt:
+            print(self._cancel_message)
+            raise UserCancel
+
+    def get_input_bool(self, prompt: str = None) -> bool:
         while True:
             response = self.get_input(prompt).lower()
             match response:
@@ -42,7 +51,7 @@ class CLI:
                 case _:
                     print("Please enter 'yes' or 'no' (or 'y'/'n')")
 
-    def get_input_int(self, prompt: str, type_name: str = "integer") -> int:
+    def get_input_int(self, prompt: str = None, type_name: str = "integer") -> int:
         while True:
             try:
                 return int(self.get_input(prompt))
@@ -61,3 +70,21 @@ class Step:
     def __init__(self, step_name: str, handler: Callable):
         self.name: str = step_name
         self.handler: Callable = handler
+
+
+"""
+CLI Errors
+"""
+
+
+class CLIError(Exception):
+    """Base class for CLI errors"""
+    pass
+
+
+class InvalidStepError(CLIError):
+    pass
+
+
+class UserCancel(CLIError):
+    pass
