@@ -112,19 +112,54 @@ class CLI:
                 case _:
                     print(self._input_bool_error_message)
 
-    def get_input_int(self, prompt: str = None, type_name: str = "integer") -> int:
+    def get_input_int(self, prompt: str = None, type_name: str = "integer", range_min: int = None, range_max: int = None) -> int:
+        return int(self._get_input_number(True, prompt, type_name, range_min, range_max))
+
+    def get_input_float(self, prompt: str = None, type_name: str = "number", range_min: int = None, range_max: int = None) -> float:
+        return float(self._get_input_number(False, prompt, type_name, range_min, range_max))
+
+    def _get_input_number(self, as_int, prompt: str = None, type_name: str = "integer", range_min: int = None, range_max: int = None):
         while True:
             try:
-                return int(self.get_input(prompt))
+                if as_int:
+                    value = int(self.get_input(prompt))
+                else:
+                    value = float(self.get_input(prompt))
+
+                if range_min and value < range_min:
+                    print(f"Must be greater than or equal to {range_min}")
+                elif range_max and value > range_max:
+                    print(f"Must be less than or equal to {range_max}")
+                else:
+                    return value
+
             except ValueError:
                 print(f"Must be a valid {type_name}")
 
-    def get_input_float(self, prompt: str, type_name: str = "number") -> float:
+    def get_input_options(self, prompt: str,
+                          options: list[str],
+                          show_options: bool = True,
+                          show_as_numbered_list = False,
+                          single_option_string: str = "option",
+                          multiple_option_string: str = None) -> str:
+        if show_as_numbered_list:
+            for (i, option) in enumerate(options):
+                prompt += f"\n[{i+1}] {option}"
+
+        elif show_options:
+            prompt = f"{prompt} \n{(multiple_option_string or single_option_string + 's').capitalize()}: [{'], ['.join(options) + ']'}"
+
         while True:
-            try:
-                return float(self.get_input(prompt))
-            except ValueError:
-                print(f"Must be a valid {type_name}")
+            if show_as_numbered_list:
+                index = self.get_input_int(prompt, range_min=0, range_max=len(options))
+                return options[index - 1]
+            else:
+                response = self.get_input(prompt)
+
+            if response in options:
+                return response
+            else:
+                print(f"Please enter a valid {single_option_string}")
 
 
 class Step:

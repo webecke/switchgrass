@@ -13,7 +13,7 @@ def start_up(cli: CLI):
 def main_menu(cli: CLI):
     while True:
         try:
-            thing_to_do = cli.get_input("What do you want to do?")
+            thing_to_do = cli.get_input_options("What do you want to do?", options=["add"], show_as_numbered_list=True)
 
             cli.goto(thing_to_do)
 
