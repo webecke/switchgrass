@@ -1,4 +1,4 @@
-from switchgrass import CLI  # Instead of from src.switchgrass.cli import CLI
+from switchgrass import *  # Instead of from src.switchgrass.cli import CLI
 
 
 def start_up(cli: CLI):
@@ -11,9 +11,16 @@ def start_up(cli: CLI):
 
 
 def main_menu(cli: CLI):
-    thing_to_do = cli.get_input("What do you want to do?")
+    while True:
+        try:
+            thing_to_do = cli.get_input("What do you want to do?")
 
-    cli.goto(thing_to_do)
+            cli.goto(thing_to_do)
+
+        except UserCancel:
+            print("Hey, you canceled that")
+        except InvalidStepError:
+            print("That's not a valid input")
 
 
 def add_menu(cli: CLI):

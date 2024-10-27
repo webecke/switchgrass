@@ -1,4 +1,18 @@
+import sys
 from typing import Dict, Callable
+
+
+def default_quit_handler(cli: "CLI"):
+    try:
+        confirm = cli.get_input_bool("Are you sure you want to quit?")
+        if confirm:
+            sys.exit(0)
+        else:
+            print("Canceling quit")
+            return
+    except UserCancel:
+        print("Canceling quit")
+        return
 
 
 class CLI:
@@ -10,6 +24,7 @@ class CLI:
         self._steps: Dict[str, Step] = {}
         self._input_indicator = input_indicator
         self._cancel_message = cancel_message
+        self._quit_handler = default_quit_handler
 
     """============
     Step Management
@@ -26,6 +41,9 @@ class CLI:
     def run(self, starting_step: str):
         self.goto(starting_step)
 
+    def goto_quit(self):
+        self._quit_handler(self)
+
     """=======
     User Input
     ======="""
@@ -37,8 +55,11 @@ class CLI:
         try:
             return input(self._input_indicator).strip()
         except KeyboardInterrupt:
-            print(self._cancel_message)
+            print(f"\n{self._cancel_message}")
             raise UserCancel
+        except EOFError:
+            print()  # ensures there's a blank line for the quit handler to start on
+            self.goto_quit()
 
     def get_input_bool(self, prompt: str = None) -> bool:
         while True:
@@ -87,4 +108,8 @@ class InvalidStepError(CLIError):
 
 
 class UserCancel(CLIError):
+    pass
+
+
+class ProgramExit(CLIError):
     pass
