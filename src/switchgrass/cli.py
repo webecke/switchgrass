@@ -48,6 +48,9 @@ class CLI:
     def add(self, step_name: str, handler: Callable[["CLI"], any]):
         self._steps[step_name] = Step(step_name, handler)
 
+    def add_quit(self, handler: Callable[["CLI"], None]):
+        self._quit_handler = handler
+
     def goto(self, step_name):
         if step_name not in self._steps.keys():
             raise InvalidStepError(f"Step '{step_name}' does not exist")
