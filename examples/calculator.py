@@ -35,11 +35,18 @@ def add_menu(cli: CLI):
     return sum
 
 
+def help_menu(cli: CLI):
+    print("This is the help menu")
+    print("Just don't be dumb")
+
+
 if __name__ == "__main__":
     cli = CLI("Example Calculator")
 
     cli.add("start", start_up)
     cli.add("main", main_menu)
     cli.add("add", add_menu)
+
+    cli.add_global_command("help", help_menu)
 
     cli.run("start")

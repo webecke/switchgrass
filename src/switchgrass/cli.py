@@ -28,6 +28,7 @@ class CLI:
                  quit_commands: set[str] = None):
         self.name: str = program_name
         self._steps: Dict[str, Step] = {}
+        self._global_commands: Dict[str, Callable[["CLI"], None]] = {}
 
         # input management strings
         self._input_indicator = input_indicator
@@ -48,13 +49,21 @@ class CLI:
     def add(self, step_name: str, handler: Callable[["CLI"], any]):
         self._steps[step_name] = Step(step_name, handler)
 
+    def add_global_command(self, command: str, handler: Callable[["CLI"], None]):
+        self._global_commands[command] = handler
+
     def add_quit(self, handler: Callable[["CLI"], None]):
         self._quit_handler = handler
 
-    def goto(self, step_name):
+    def goto(self, step_name: str):
         if step_name not in self._steps.keys():
             raise InvalidStepError(f"Step '{step_name}' does not exist")
         return self._steps[step_name].handler(self)
+
+    def goto_global(self, command: str):
+        if command not in self._global_commands.keys():
+            raise InvalidStepError(f"Global command '{command}' does not exist")
+        return self._global_commands[command](self)
 
     def run(self, starting_step: str):
         self.goto(starting_step)
@@ -71,12 +80,16 @@ class CLI:
             print(prompt)
 
         try:
-            response = input(self._input_indicator).strip()
+            response: str = input(self._input_indicator).strip()
 
-            if response.lower() in self._quit_commands:
-                raise EOFError
-            elif response.lower() in self._cancel_commands:
-                raise KeyboardInterrupt
+            match response.lower():
+                case command if command in self._quit_commands:
+                    raise EOFError
+                case command if command in self._cancel_commands:
+                    raise KeyboardInterrupt
+                case command if command in self._global_commands.keys():
+                    self.goto_global(command)
+                    return self.get_input(prompt)
 
             return response
 
