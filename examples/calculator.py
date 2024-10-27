@@ -1,19 +1,19 @@
-from src.switchgrass.cli import CLI
+from switchgrass import CLI  # Instead of from src.switchgrass.cli import CLI
 
 
 def start_up(cli: CLI):
     print("Welcome to the Example Calculator!")
     print("Powered by switchgrass 🌾")
 
-    cli.go_to("main")
+    cli.goto("main")
 
     print("I guess we're done here")
 
 
 def main_menu(cli: CLI):
-    thing_to_do = input("What do you want to do?\n")
+    thing_to_do = cli.get_input("What do you want to do?")
 
-    cli.go_to(thing_to_do)
+    cli.goto(thing_to_do)
 
 
 def add_menu(cli: CLI):

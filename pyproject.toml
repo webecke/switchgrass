@@ -1,0 +1,9 @@
+[project]
+name = "switchgrass"
+version = "0.1.0a1"
+description = "A homegrown CLI framework"
+requires-python = ">=3.10"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
